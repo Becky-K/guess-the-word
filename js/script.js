@@ -1,5 +1,5 @@
 //Targets the unordered list that displays what letters have been guessed
-const guessedLetters = document.querySelector(".guessed-letters");
+const guessedLettersElement = document.querySelector(".guessed-letters");
 //Targets the "Guess" button
 const guessButton = document.querySelector(".guess");
 //Targets input box
@@ -21,7 +21,7 @@ const guessedLettersArray = [];
 
 //Display placeholder icon for each letter in word
 const placeHolder = function(word){
-    placeHolderLetters = [];
+    const placeHolderLetters = [];
     for (const letter of word){
         placeHolderLetters.push("●")
     }
@@ -30,21 +30,21 @@ const placeHolder = function(word){
 
 placeHolder(word);
 
-guessButton.addEventListener("click", function(e){
+guessButton.addEventListener("click", function(e) {
     e.preventDefault();
+     //Empties message
+     messageAfterLetterGuess.innerText = ""; 
     //Grabs what was entered in input
-    const letterInputValue = letterInput.value;
-    //Empties input box   
-    letterInput.value = ("");
-    //Empties message
-    messageAfterLetterGuess.innerText = "";
-    
+    const guess = letterInput.value;      
     //Checking the validity of the input using the "inputValidation" function and then changing it to a variable to be used with the makeGuess function
-    const goodInput = inputValidation(letterInputValue);
+    const goodInput = inputValidation(guess);
 
     //Checking letters are valid using the "inputValidation" function, then using the "makeGuess" function to add them to the array
-    makeGuess(goodInput);
-
+    if (goodInput){
+        makeGuess(guess);
+    }
+    //Empties input box   
+    letterInput.value = ("");
 });
 
 //A function which validates the input
@@ -65,15 +65,53 @@ const inputValidation = function(input){
     }
 };
 
-//A function to capture input and pass to "guessedLetters array"
-const makeGuess = function(letter){
-    letter.toUpperCase();
-    if (guessedLettersArray.includes(letter)){
-        messageAfterLetterGuess.innerText = "You already guessed that letter, silly. Try another one!"
+//A function to capture input and pass to "guessedLetters array" then display guessed letters on screen using "showLetters" function
+const makeGuess = function(guess){
+    guess = guess.toUpperCase();
+    if (guessedLettersArray.includes(guess)){
+        messageAfterLetterGuess.innerText = "You already guessed that letter, silly. Try another one!";
     } else {
-        guessedLettersArray.push(letter);
+        guessedLettersArray.push(guess);
+        console.log(guessedLettersArray);
+        showLetters();
+        wordInProgressUpdate(guessedLettersArray);
     }
-    console.log(guessedLettersArray);
 };
+
+//A function to display to guessed letters
+const showLetters = function() {
+    guessedLettersElement.innerHTML = "";
+    for (const letter of guessedLettersArray){
+        const li = document.createElement("li");
+        li.innerText = letter;
+        guessedLettersElement.append(li);           
+    }          
+};
+
+//Will update the word in progress changing the circles to guessed letters
+const wordInProgressUpdate = function (guessedLettersArray) {
+    const wordUpper = word.toUpperCase();
+    //changes word into an array
+    const wordArray = wordUpper.split("");
+    const revealWord = [];
+    for (const letter of wordArray){
+        if (guessedLettersArray.includes(letter)){
+            revealWord.push(letter.toUpperCase());
+        } else {
+            revealWord.push("●");
+        }
+    }
+    wordInProgressMessage.innerText = revealWord.join("");
+    win();
+};
+
+//Function to check if the player has won
+const win = function (){
+    if (word.toUpperCase() === wordInProgressMessage.innerText) {
+        messageAfterLetterGuess.innerHTML = '<p class="highlight">You guessed the correct word! Congrats!</p>';
+        messageAfterLetterGuess.classList.add("win");        
+    }
+};
+
 
 
