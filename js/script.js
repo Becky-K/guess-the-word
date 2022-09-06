@@ -17,7 +17,7 @@ const playAgainButton = document.querySelector(".play-again");
 //Variable for the randomly generated word. "Magnolia" as placeholder
 let word = "magnolia";
 //Array for capturing letters that have been guessed
-const guessedLettersArray = [];
+let guessedLettersArray = [];
 //Variable to indicate remaining guesses
 let remainingGuesses = 8;
 //Creating an erray from the random word
@@ -140,7 +140,7 @@ const counter = function(guess){
     //changes remaining guesses counter and reveals word upon failure
     if (remainingGuesses === 0){
         messageAfterLetterGuess.innerHTML = `You've run out of guesses! The word was <span class="highlight">${word.toUpperCase()}</span>.`;
-        span.innerText = "0 guesses"
+        startOver();
     } else if (remainingGuesses === 1){
         span.innerText = "1 guess"
     } else {
@@ -153,9 +153,37 @@ const counter = function(guess){
 const win = function (){
     if (word.toUpperCase() === wordInProgressMessage.innerText) {
         messageAfterLetterGuess.innerHTML = '<p class="highlight">You guessed the correct word! Congrats!</p>';
-        messageAfterLetterGuess.classList.add("win");        
+        messageAfterLetterGuess.classList.add("win");
+        startOver();        
     }
 };
+
+//Change display once game is over
+const startOver = function(){
+    guessButton.classList.add("hide");
+    remainingLetters.classList.add("hide");
+    guessedLettersElement.classList.add("hide");
+
+    playAgainButton.classList.remove("hide");
+};
+
+//Play again
+playAgainButton.addEventListener("click", function(){
+    messageAfterLetterGuess.classList.remove("win");
+    messageAfterLetterGuess.innerText = "";
+    guessedLettersElement.innerText = "";
+    remainingGuesses = 8;
+    guessedLettersArray = [];
+    span.innerText = `${remainingGuesses} guesses`;
+
+    getWord();
+
+    guessButton.classList.remove("hide");
+    remainingLetters.classList.remove("hide");
+    guessedLettersElement.classList.remove("hide");
+
+    playAgainButton.classList.add("hide");
+});
 
 
 
